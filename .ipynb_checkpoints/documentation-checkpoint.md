@@ -59,3 +59,19 @@ Implemented asyncio for comic page url and genre scraping function.
 Implemented **Solution 1**
 
 Function runs with no errors, just exceptions. comic page url dictionary contains urls for 659,264 pages from the 8,827 episodes no timeout error occurs on.
+
+### 08/09/24
+
+Attempted **Solution 2** by trying to diagnose the cause of the `TimeoutErrors`.
+
+Ran the `create_page_url_with_genres_dict` function on a small subset of episode urls which had caused a timeout error. I had expected them to fail, but surprisingly they ran without issue.
+
+---
+
+Attempted **Solution 2** by trying to fix the cause of the `TimeoutErrors`.
+
+Added a semaphore of 100 encompassing the requests. This had no effect on the errors.
+
+Added a timeout parameter to the ClientSession to set the timeout limit to 2 minutes. Before setting the limit, they timed out after 5 minutes. This increased the number of `TimeoutErrors` significantly. I measured the change in errors with the number of key value pairs (comic page urls) in the dictionary resulting from the `create_page_url_with_genres_dict` function before it failed. This count went from ~659,000 to ~368,000 due to the change in timeout limit. Next, I tried timeout parameters of 1 minute and 20 seconds. The page counts for these were ~246,000 and ~97,000 respectively.
+
+Based on the results of my timeout experimentation, setting the timeout to None appeared promising. This would permit all the requests to finish, letting the function collect data from **every** episode url. This approach proved successful, taking ~400 seconds (~6m40s) to collect 951984 comic page urls.
