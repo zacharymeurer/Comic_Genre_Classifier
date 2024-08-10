@@ -6,7 +6,7 @@
 - Training of initial neural network model takes ~2 hours.
 - Testing accuracy: ~54% before hyperparameter tuning or optimization.
 
-### 08/08/24
+### 08/07/24
 
 Cleaned and optimized URL and genre scraping functions.
 
@@ -74,4 +74,10 @@ Added a semaphore of 100 encompassing the requests. This had no effect on the er
 
 Added a timeout parameter to the ClientSession to set the timeout limit to 2 minutes. Before setting the limit, they timed out after 5 minutes. This increased the number of `TimeoutErrors` significantly. I measured the change in errors with the number of key value pairs (comic page urls) in the dictionary resulting from the `create_page_url_with_genres_dict` function before it failed. This count went from ~659,000 to ~368,000 due to the change in timeout limit. Next, I tried timeout parameters of 1 minute and 20 seconds. The page counts for these were ~246,000 and ~97,000 respectively.
 
-Based on the results of my timeout experimentation, setting the timeout to None appeared promising. This would permit all the requests to finish, letting the function collect data from **every** episode url. This approach proved successful, taking ~400 seconds (~6m40s) to collect 951984 comic page urls.
+Based on the results of my timeout experimentation, setting the timeout to None appeared promising. This would permit all the requests to finish, letting the function collect data from **every** episode url. This approach proved successful, taking ~400 seconds (~6m40s) to collect 955,200 comic page urls.
+
+---
+
+Implemented asyncio for comic page downloading function.
+
+Function downloads each of the 955,200 comic pgaes from the `page_url_genre_dict` and sorts them into directories based on their genre. Initial testing on 9000 comic pages each from different episodes proves promising. Runtime for a 9000 page dictionary took ~141.459 seconds. Using this ratio of pages to seconds, the downloading process of the entire `page_url_genre_dict` can be estimated to take ~4.33 hours. The process is being run overnight. 
