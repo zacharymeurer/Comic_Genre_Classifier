@@ -81,3 +81,9 @@ Based on the results of my timeout experimentation, setting the timeout to None 
 Implemented asyncio for comic page downloading function.
 
 Function downloads each of the 955,200 comic pgaes from the `page_url_genre_dict` and sorts them into directories based on their genre. Initial testing on 9000 comic pages each from different episodes proves promising. Runtime for a 9000 page dictionary took ~141.459 seconds. Using this ratio of pages to seconds, the downloading process of the entire `page_url_genre_dict` can be estimated to take ~4.33 hours. The process is being run overnight. 
+
+### 08/20/24
+
+Tested asyncio for comic page downloading function.
+
+Function downloaded 101,559 comic pages before I stopped the kernel. The jpg images of resolutions around 800x1200 took up 26.84GB. The 955,200 comic images would have occupied too much space on my disk. Thus, I chose to terminate the program. It took 20-30 minutes to write the ~100,000 comic pages, so the speed of the function is in line with estimates.
