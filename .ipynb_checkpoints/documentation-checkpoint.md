@@ -87,3 +87,53 @@ Function downloads each of the 955,200 comic pgaes from the `page_url_genre_dict
 Tested asyncio for comic page downloading function.
 
 Function downloaded 101,559 comic pages before I stopped the kernel. The jpg images of resolutions around 800x1200 took up 26.84GB. The 955,200 comic images would have occupied too much space on my disk. Thus, I chose to terminate the program. It took 20-30 minutes to write the ~100,000 comic pages, so the speed of the function is in line with estimates.
+
+---
+
+Discovered problem with episode url scraping process.
+
+**Problem**: If a series has more than 9 episodes, there are multiple webpages listing the episodes in subsets of 9 per webpage. Only the first webpage containing the 9 most recent episodes has been getting scraped by the current process.
+
+**Solution**: Find the number of webpages listing episodes for a series by finding the total number of episodes (This can be found on the first/main/most recent webpage associated with a series). We can plug this number into this equation: 
+
+$\text{number of webpages} = \lceil \frac{\text{number of episodes}}{9} \rceil$ 
+
+Then, we create a link for each webpage by adding the "&page={webpage index}" at the end of the base link for each series.
+
+---
+
+Implemented **Solution**
+
+Function is now working as intended, scraping all of the webpages containing episode URLs for each series. The number of URLs in series_url_genre_dict has gone from 1281 to 9981. This will lead to significantly more comic episode and page URLs being scraped. Additionally, the time elapsed during the `create_series_url_with_genres_dict()` function has increased from 0.992s to 8.611s because the function now has to request data from over a thousand URLs compared to before the change when it only made one request. The entire URL scraping process is currently being run. The duration of this process is estimated to increase by a factor of 10x-20x.
+
+---
+
+Tested scraping functions with fixed series URL scraping function. Series URL scraping takes 11.757s, episode URL scraping takes 175.730s, and page scraping takes 30m-1h to error. There are 9,981 series URLs scraped, 82,899 episode URLs scraped, and an indeterminate number of page URLs. The comic page function is erroring.
+
+**Problem**: Page scraping finishes after 30m-1h with 3 occurrences of `[Errno 32] Broken pipe`. 
+
+### 08/21/24
+
+Created exception for broken pipe error. Currently rerunning scraping process to find cases where broken pipe errors occur.
+
+---
+
+Created functions for writing comic dictionaries to json files and reading them as dictionaries. This process stores the scraped data on disk so the scraping process does not need to be run repeatedly.
+
+### 08/22/24
+
+Tested scraping functions once more. 
+
+Time elapsed for each function:
+
+- Finished creating episode url dict in 16.846s
+- Finished creating episode url dict in 358.290s
+- Finished creating page url dict in 6840.362s
+
+Size of each dictionary:
+
+- episode url dict has 9,998 records
+- episode url dict has 78,139 records
+- page url dict has 4,603,025 records
+
+There were no occurrences of the broken pipe error. I expect these errors are caused by unstable internet connection, as the only variable to change between this testing attempt and my last (which had the broken pipe errors) is my internet.
